@@ -1,19 +1,15 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.IO;
-using System.Net.WebSockets;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
+using Websocket.Client;
 
 namespace DeconzToMqtt
 {
     public interface IWebSocketService
     {
-        Task StartAsync(CancellationToken token);
+        Task StartAsync();
     }
 
-    // https://thecodegarden.net/websocket-client-dotnet
     public class WebSocketService : IWebSocketService
     {
         private readonly ILogger<WebSocketService> _logger;
@@ -23,44 +19,21 @@ namespace DeconzToMqtt
             _logger = logger;
         }
 
-        public async Task StartAsync(CancellationToken token)
+        public Task StartAsync()
         {
-            do
+            var url = new Uri("ws://192.168.0.93:8443");
+
+            var client = new WebsocketClient(url)
             {
-                using var socket = new ClientWebSocket();
-                try
-                {
-                    await socket.ConnectAsync(new Uri("ws://192.168.0.93:8443"), token);
-                    await ReceiveAsync(socket, token);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Websocket problem.");
-                    throw;
-                }
-            } while (!token.IsCancellationRequested);
-        }
+                Name = "deCONZ",
+                ReconnectTimeout = TimeSpan.FromMinutes(5),
+                ErrorReconnectTimeout = TimeSpan.FromSeconds(30)
+            };
 
-        private async Task ReceiveAsync(ClientWebSocket socket, CancellationToken token)
-        {
-            var buffer = new ArraySegment<byte>(new byte[2048]);
-            do
-            {
-                WebSocketReceiveResult result;
-                using var ms = new MemoryStream();
-                do
-                {
-                    result = await socket.ReceiveAsync(buffer, token);
-                    ms.Write(buffer.Array, buffer.Offset, result.Count);
-                } while (!result.EndOfMessage);
-
-                if (result.MessageType == WebSocketMessageType.Close)
-                    break;
-
-                ms.Seek(0, SeekOrigin.Begin);
-                using var reader = new StreamReader(ms, Encoding.UTF8);
-                _logger.LogInformation(await reader.ReadToEndAsync());
-            } while (!token.IsCancellationRequested);
+            client.ReconnectionHappened.Subscribe(info => _logger.LogInformation($"Reconnection happened, type: {info.Type}, url: {client.Url}"));
+            client.DisconnectionHappened.Subscribe(info => _logger.LogWarning($"Disconnection happened, type: {info.Type}"));
+            client.MessageReceived.Subscribe(msg => _logger.LogInformation($"Message received: {msg}"));
+            return client.Start();
         }
     }
 }

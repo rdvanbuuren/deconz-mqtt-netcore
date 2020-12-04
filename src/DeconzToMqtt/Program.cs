@@ -4,15 +4,14 @@ using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace DeconzToMqtt
 {
     internal class Program
     {
-        private static readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        private static readonly ManualResetEvent ExitEvent = new ManualResetEvent(false);
 
-        private static async Task Main(string[] args)
+        private static void Main(string[] args)
         {
             //setup our DI
             var serviceProvider = new ServiceCollection()
@@ -25,23 +24,20 @@ namespace DeconzToMqtt
                 .WriteTo.Console(theme: AnsiConsoleTheme.Code)
                 .CreateLogger();
 
-            Log.Information("Starting application...");
+            Log.Information("Starting application.");
 
             Console.CancelKeyPress += (sender, e) =>
             {
-                _cancellationTokenSource.Cancel();
-                Console.WriteLine("Exiting...");
+                Log.Information("Exiting...");
                 Environment.Exit(0);
             };
 
-            var cancellationToken = _cancellationTokenSource.Token;
+            var wss = serviceProvider.GetService<IWebSocketService>();
+            wss.StartAsync();
 
-            // run websocket task in background
-            var websocketService = serviceProvider.GetService<IWebSocketService>();
-            var websocketTask = Task.Run(() => websocketService.StartAsync(cancellationToken), cancellationToken);
+            Log.Information("Press any key to stop application.");
 
-            Log.Information("Press any key to stop application...");
-            Task.WaitAll(websocketTask);
+            ExitEvent.WaitOne();
         }
 
         private static IConfiguration LoadConfig()
