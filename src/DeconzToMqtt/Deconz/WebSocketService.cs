@@ -3,7 +3,7 @@ using System;
 using System.Threading.Tasks;
 using Websocket.Client;
 
-namespace DeconzToMqtt
+namespace DeconzToMqtt.Deconz
 {
     public interface IWebSocketService
     {

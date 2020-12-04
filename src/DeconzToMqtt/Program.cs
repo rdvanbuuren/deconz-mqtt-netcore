@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using DeconzToMqtt.Deconz;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
@@ -29,7 +30,8 @@ namespace DeconzToMqtt
             Console.CancelKeyPress += (sender, e) =>
             {
                 Log.Information("Exiting...");
-                Environment.Exit(0);
+                e.Cancel = true;
+                ExitEvent.Set();
             };
 
             var wss = serviceProvider.GetService<IWebSocketService>();
@@ -38,6 +40,9 @@ namespace DeconzToMqtt
             Log.Information("Press any key to stop application.");
 
             ExitEvent.WaitOne();
+
+            Log.CloseAndFlush();
+            Environment.Exit(0);
         }
 
         private static IConfiguration LoadConfig()
