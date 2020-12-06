@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using DeconzToMqtt.Deconz.Websocket.Models;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -50,6 +52,9 @@ namespace DeconzToMqtt.Deconz.Websocket
         private void MessageReceived(ResponseMessage message)
         {
             _logger.LogInformation($"Message received: {message}");
+            var msg = JsonConvert.DeserializeObject<Message>(message.Text);
+
+            // TODO emit event
         }
     }
 }
