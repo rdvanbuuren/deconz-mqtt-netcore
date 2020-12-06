@@ -1,17 +1,14 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Websocket.Client;
 
 namespace DeconzToMqtt.Deconz.Websocket
 {
-    public interface IWebSocketService
-    {
-        Task StartAsync();
-    }
-
-    public class WebSocketService : IWebSocketService
+    public class WebSocketService : IHostedService
     {
         private readonly ILogger<WebSocketService> _logger;
         private readonly DeconzOptions _options;
@@ -26,8 +23,7 @@ namespace DeconzToMqtt.Deconz.Websocket
             _logger = logger;
         }
 
-        /// <inheritdoc/>
-        public Task StartAsync()
+        public Task StartAsync(CancellationToken cancellationToken)
         {
             var url = new Uri($"ws://{_options.Host}:{_options.WebsocketPort}");
 
@@ -41,7 +37,14 @@ namespace DeconzToMqtt.Deconz.Websocket
             client.ReconnectionHappened.Subscribe(info => _logger.LogInformation($"Reconnection happened, type: {info.Type}, url: {client.Url}"));
             client.DisconnectionHappened.Subscribe(info => _logger.LogWarning($"Disconnection happened, type: {info.Type}"));
             client.MessageReceived.Subscribe(MessageReceived);
+
+            _logger.LogDebug("Started websocket client");
             return client.Start();
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
         }
 
         private void MessageReceived(ResponseMessage message)
