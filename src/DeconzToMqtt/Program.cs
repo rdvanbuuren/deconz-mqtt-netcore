@@ -1,10 +1,15 @@
 ﻿using DeconzToMqtt.Deconz;
+using DeconzToMqtt.Deconz.Api;
+using DeconzToMqtt.Deconz.Api.Requests;
+using DeconzToMqtt.Deconz.Websocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Refit;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace DeconzToMqtt
 {
@@ -12,13 +17,20 @@ namespace DeconzToMqtt
     {
         private static readonly ManualResetEvent ExitEvent = new ManualResetEvent(false);
 
-        private static void Main(string[] args)
+        private static async Task Main(string[] args)
         {
             //setup our DI
-            var serviceProvider = new ServiceCollection()
+            var services = new ServiceCollection()
                 .AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true))
-                .AddSingleton<IWebSocketService, WebSocketService>()
-                .BuildServiceProvider();
+                .AddScoped<HttpLoggingHandler>()
+                .AddScoped<IWebSocketService, WebSocketService>()
+                .AddScoped<IApiClient, ApiClient>();
+
+            services.AddRefitClient<IDeconzConfigurationApi>()
+                .ConfigureHttpClient(client => client.BaseAddress = new Uri("http://192.168.0.93:8080/api"))
+                .AddHttpMessageHandler<HttpLoggingHandler>();
+
+            var serviceProvider = services.BuildServiceProvider();
 
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -34,8 +46,15 @@ namespace DeconzToMqtt
                 ExitEvent.Set();
             };
 
-            var wss = serviceProvider.GetService<IWebSocketService>();
-            wss.StartAsync();
+            //var wss = serviceProvider.GetService<IWebSocketService>();
+            //wss.StartAsync();
+
+            var client = serviceProvider.GetService<IDeconzConfigurationApi>();
+            var created = await client.CreateApiKey(new CreateApiKeyRequest { DeviceType = "testabc" });
+
+            await client.DeleteApiKey("1570120947", created.Result.Username);
+
+            //await client.DeleteApiKey("1570120947", "48F131E33D");
 
             Log.Information("Press any key to stop application.");
 
@@ -49,7 +68,7 @@ namespace DeconzToMqtt
         {
             return new ConfigurationBuilder()
                 .SetBasePath(Environment.CurrentDirectory)
-                .AddJsonFile("appsettings.json", optional: false)
+                //.AddJsonFile("appsettings.json", optional: true)
                 .AddEnvironmentVariables()
                 .Build();
         }

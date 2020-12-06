@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "DeconzToMqtt": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "Deconz__ApiKey": "1570120947",
+        "Deconz__Host": "192.168.0.93",
+        "Deconz__Port": "8443"
+      }
+    }
+  }
+}

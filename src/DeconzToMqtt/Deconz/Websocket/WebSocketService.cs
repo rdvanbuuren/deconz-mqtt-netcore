@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
 using Websocket.Client;
 
-namespace DeconzToMqtt.Deconz
+namespace DeconzToMqtt.Deconz.Websocket
 {
     public interface IWebSocketService
     {
@@ -13,15 +14,22 @@ namespace DeconzToMqtt.Deconz
     public class WebSocketService : IWebSocketService
     {
         private readonly ILogger<WebSocketService> _logger;
+        private readonly DeconzOptions _options;
 
-        public WebSocketService(ILogger<WebSocketService> logger)
+        /// <summary>
+        /// Creates a new instance of the <see cref="WebSocketService"/> class.
+        /// </summary>
+        /// <param name="logger">The logger for this class.</param>
+        public WebSocketService(IOptions<DeconzOptions> options, ILogger<WebSocketService> logger)
         {
+            _options = options.Value;
             _logger = logger;
         }
 
+        /// <inheritdoc/>
         public Task StartAsync()
         {
-            var url = new Uri("ws://192.168.0.93:8443");
+            var url = new Uri($"ws://{_options.Host}:{_options.WebsocketPort}");
 
             var client = new WebsocketClient(url)
             {
@@ -32,8 +40,13 @@ namespace DeconzToMqtt.Deconz
 
             client.ReconnectionHappened.Subscribe(info => _logger.LogInformation($"Reconnection happened, type: {info.Type}, url: {client.Url}"));
             client.DisconnectionHappened.Subscribe(info => _logger.LogWarning($"Disconnection happened, type: {info.Type}"));
-            client.MessageReceived.Subscribe(msg => _logger.LogInformation($"Message received: {msg}"));
+            client.MessageReceived.Subscribe(MessageReceived);
             return client.Start();
+        }
+
+        private void MessageReceived(ResponseMessage message)
+        {
+            _logger.LogInformation($"Message received: {message}");
         }
     }
 }

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeconzToMqtt", "DeconzToMqtt.csproj", "{EE0905AA-42B6-4BD5-93A0-616E227D93F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeconzToMqtt", "DeconzToMqtt.csproj", "{EE0905AA-42B6-4BD5-93A0-616E227D93F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
