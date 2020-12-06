@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -16,19 +17,21 @@ namespace DeconzToMqtt.Deconz.Api
     public class ApiClient : IApiClient
     {
         private readonly IDeconzConfigurationApi _deconzApi;
+        private readonly DeconzOptions _options;
         private readonly ILogger<ApiClient> _logger;
 
-        private const string ApiKey = "1570120947"; // TODO config
-
-        public ApiClient(IDeconzConfigurationApi deconzApi, ILogger<ApiClient> logger)
+        public ApiClient(IDeconzConfigurationApi deconzApi, IOptions<DeconzOptions> options, ILogger<ApiClient> logger)
         {
             _deconzApi = deconzApi;
+            _options = options.Value;
             _logger = logger;
         }
 
         public async Task<int> GetWebSocketPortAsync()
         {
-            var config = await _deconzApi.GetConfiguration(ApiKey);
+            _logger.LogInformation("Getting websocket port from deCONZ config.");
+
+            var config = await _deconzApi.GetConfiguration(_options.ApiKey);
             return config.WebSocketPort;
         }
     }

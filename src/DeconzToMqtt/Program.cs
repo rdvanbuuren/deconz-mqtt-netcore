@@ -56,7 +56,7 @@ namespace DeconzToMqtt
             services.AddScoped<IApiClient, ApiClient>();
 
             services.AddRefitClient<IDeconzConfigurationApi>()
-                .ConfigureHttpClient(client => client.BaseAddress = new Uri("http://192.168.0.93:8080/api"))
+                .ConfigureHttpClient(client => client.BaseAddress = new Uri($"http://{deconzOptions.Host}:{deconzOptions.Port}/api"))
                 .AddHttpMessageHandler<HttpLoggingHandler>();
 
             services.AddHostedService<WebSocketService>();
