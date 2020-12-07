@@ -1,6 +1,7 @@
 ﻿using DeconzToMqtt.Deconz;
 using DeconzToMqtt.Deconz.Api;
 using DeconzToMqtt.Deconz.Websocket;
+using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -60,6 +61,8 @@ namespace DeconzToMqtt
                 .AddHttpMessageHandler<HttpLoggingHandler>();
 
             services.AddHostedService<WebSocketService>();
+
+            services.AddMediatR(typeof(Program));
         }
     }
 }

@@ -3,7 +3,7 @@ using Newtonsoft.Json.Converters;
 
 namespace DeconzToMqtt.Deconz.Websocket.Models
 {
-    internal class Message
+    public class Message
     {
         [JsonProperty("t")]
         [JsonConverter(typeof(StringEnumConverter))]

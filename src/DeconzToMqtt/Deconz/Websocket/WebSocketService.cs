@@ -1,4 +1,6 @@
 ﻿using DeconzToMqtt.Deconz.Websocket.Models;
+using DeconzToMqtt.Events;
+using MediatR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -12,6 +14,7 @@ namespace DeconzToMqtt.Deconz.Websocket
 {
     public class WebSocketService : IHostedService
     {
+        private readonly IMediator _mediator;
         private readonly ILogger<WebSocketService> _logger;
         private readonly DeconzOptions _options;
 
@@ -19,9 +22,10 @@ namespace DeconzToMqtt.Deconz.Websocket
         /// Creates a new instance of the <see cref="WebSocketService"/> class.
         /// </summary>
         /// <param name="logger">The logger for this class.</param>
-        public WebSocketService(IOptions<DeconzOptions> options, ILogger<WebSocketService> logger)
+        public WebSocketService(IMediator mediator, IOptions<DeconzOptions> options, ILogger<WebSocketService> logger)
         {
             _options = options.Value;
+            _mediator = mediator;
             _logger = logger;
         }
 
@@ -54,7 +58,8 @@ namespace DeconzToMqtt.Deconz.Websocket
             _logger.LogInformation($"Message received: {message}");
             var msg = JsonConvert.DeserializeObject<Message>(message.Text);
 
-            // TODO emit event
+            // emit event so mqtt service will pick it up.
+            _mediator.Publish(new DeconzMessageEvent(msg));
         }
     }
 }
