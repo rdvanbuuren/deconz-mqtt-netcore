@@ -3,10 +3,13 @@
     "DeconzToMqtt": {
       "commandName": "Project",
       "environmentVariables": {
-        "deCONZ__ApiKey": "1570120947",
+        "deCONZ__WebSocketPort": "8443",
         "deCONZ__Host": "192.168.0.93",
-        "deCONZ__WebSocketPort": "8443"
+        "deCONZ__ApiKey": "1570120947"
       }
+    },
+    "Docker": {
+      "commandName": "Docker"
     }
   }
 }
