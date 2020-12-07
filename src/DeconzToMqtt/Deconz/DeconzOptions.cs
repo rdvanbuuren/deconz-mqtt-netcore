@@ -16,11 +16,6 @@
         public int Port { get; set; }
 
         /// <summary>
-        /// Gets or set the websocket port.
-        /// </summary>
-        public int WebsocketPort { get; set; }
-
-        /// <summary>
         /// Gets or sets the api key.
         /// </summary>
         public string ApiKey { get; set; }

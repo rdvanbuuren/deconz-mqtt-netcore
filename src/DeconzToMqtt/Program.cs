@@ -54,7 +54,6 @@ namespace DeconzToMqtt
             services.Configure<DeconzOptions>(hostContext.Configuration.GetSection("deCONZ").Bind);
 
             services.AddScoped<HttpLoggingHandler>();
-            services.AddScoped<IApiClient, ApiClient>();
 
             services.AddRefitClient<IDeconzConfigurationApi>()
                 .ConfigureHttpClient(client => client.BaseAddress = new Uri($"http://{deconzOptions.Host}:{deconzOptions.Port}/api"))

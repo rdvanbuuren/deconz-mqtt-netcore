@@ -1,5 +1,6 @@
 ﻿using DeconzToMqtt.Deconz.Websocket.Models;
 using DeconzToMqtt.Events;
+using DeconzToMqtt.Requests;
 using MediatR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -29,9 +30,11 @@ namespace DeconzToMqtt.Deconz.Websocket
             _logger = logger;
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
-            var url = new Uri($"ws://{_options.Host}:{_options.WebsocketPort}");
+            var websocketPort = await _mediator.Send(new DeconzWebSocketRequest(), cancellationToken);
+
+            var url = new Uri($"ws://{_options.Host}:{websocketPort}");
 
             var client = new WebsocketClient(url)
             {
@@ -42,10 +45,10 @@ namespace DeconzToMqtt.Deconz.Websocket
 
             client.ReconnectionHappened.Subscribe(info => _logger.LogInformation($"Reconnection happened, type: {info.Type}, url: {client.Url}"));
             client.DisconnectionHappened.Subscribe(info => _logger.LogWarning($"Disconnection happened, type: {info.Type}"));
-            client.MessageReceived.Subscribe(MessageReceived);
+            client.MessageReceived.Subscribe(msg => MessageReceived(msg, cancellationToken));
 
             _logger.LogDebug("Started websocket client");
-            return client.Start();
+            await client.Start();
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
@@ -53,13 +56,13 @@ namespace DeconzToMqtt.Deconz.Websocket
             return Task.CompletedTask;
         }
 
-        private void MessageReceived(ResponseMessage message)
+        private void MessageReceived(ResponseMessage message, CancellationToken cancellationToken)
         {
             _logger.LogInformation($"Message received: {message}");
             var msg = JsonConvert.DeserializeObject<Message>(message.Text);
 
             // emit event so mqtt service will pick it up.
-            _mediator.Publish(new DeconzMessageEvent(msg));
+            _mediator.Publish(new DeconzMessageEvent(msg), cancellationToken);
         }
     }
 }

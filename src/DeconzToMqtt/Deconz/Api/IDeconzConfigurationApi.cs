@@ -1,6 +1,7 @@
 ﻿using DeconzToMqtt.Deconz.Api.Requests;
 using DeconzToMqtt.Deconz.Api.Responses;
 using Refit;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DeconzToMqtt.Deconz.Api
@@ -8,7 +9,7 @@ namespace DeconzToMqtt.Deconz.Api
     public interface IDeconzConfigurationApi
     {
         [Get("/{apiKey}/config")]
-        Task<Configuration> GetConfiguration(string apiKey);
+        Task<Configuration> GetConfiguration(string apiKey, CancellationToken cancellationToken);
 
         [Post("/")]
         Task<Succes<ApiKey>> CreateApiKey(CreateApiKeyRequest request);
