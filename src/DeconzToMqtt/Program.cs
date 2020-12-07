@@ -1,6 +1,6 @@
 ﻿using DeconzToMqtt.Deconz;
-using DeconzToMqtt.Deconz.Api;
 using DeconzToMqtt.Deconz.Websocket;
+using DeConzToMqtt.Domain.DeConz.Apis;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -55,7 +55,7 @@ namespace DeconzToMqtt
 
             services.AddScoped<HttpLoggingHandler>();
 
-            services.AddRefitClient<IDeconzConfigurationApi>()
+            services.AddRefitClient<IDeConzConfigurationApi>()
                 .ConfigureHttpClient(client => client.BaseAddress = new Uri($"http://{deconzOptions.Host}:{deconzOptions.Port}/api"))
                 .AddHttpMessageHandler<HttpLoggingHandler>();
 

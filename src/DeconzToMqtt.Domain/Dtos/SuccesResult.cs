@@ -1,9 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace DeconzToMqtt.Deconz.Api.Responses
+namespace DeConzToMqtt.Domain.DeConz.Dtos
 {
-    public class Succes<TResult> : Collection<InternalSuccess<TResult>>
+    public class SuccesResult<TResult> : Collection<InternalSuccess<TResult>>
         where TResult : class
     {
         public TResult Result => this.FirstOrDefault()?.Success;

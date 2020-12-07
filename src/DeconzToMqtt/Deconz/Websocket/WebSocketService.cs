@@ -1,6 +1,6 @@
-﻿using DeconzToMqtt.Deconz.Websocket.Models;
-using DeconzToMqtt.Events;
-using DeconzToMqtt.Requests;
+﻿using DeConzToMqtt.Domain.DeConz.Dtos.WebSocket;
+using DeConzToMqtt.Domain.DeConz.Events;
+using DeConzToMqtt.Domain.DeConz.Requests;
 using MediatR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

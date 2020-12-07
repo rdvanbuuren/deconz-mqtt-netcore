@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace DeconzToMqtt.Deconz.Api.Requests
+namespace DeConzToMqtt.Domain.DeConz.Dtos.Configuration
 {
     public class CreateApiKeyRequest
     {

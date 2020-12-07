@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace DeconzToMqtt.Deconz.Websocket.Models
+namespace DeConzToMqtt.Domain.DeConz.Dtos.WebSocket
 {
     [DataContract]
     public class SensorConfig

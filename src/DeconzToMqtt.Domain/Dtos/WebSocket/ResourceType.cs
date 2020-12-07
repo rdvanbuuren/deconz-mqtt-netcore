@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace DeconzToMqtt.Deconz.Websocket.Models
+namespace DeConzToMqtt.Domain.DeConz.Dtos.WebSocket
 {
     /// <summary>
     /// Type of resource to which the message belongs

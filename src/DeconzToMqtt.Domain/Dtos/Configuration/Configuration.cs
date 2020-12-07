@@ -1,4 +1,4 @@
-﻿namespace DeconzToMqtt.Deconz.Api.Responses
+﻿namespace DeConzToMqtt.Domain.DeConz.Dtos.Configuration
 {
     public class Configuration
     {

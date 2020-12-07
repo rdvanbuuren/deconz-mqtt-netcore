@@ -1,7 +1,7 @@
-﻿using DeconzToMqtt.Deconz.Websocket.Models;
+﻿using DeConzToMqtt.Domain.DeConz.Dtos.WebSocket;
 using MediatR;
 
-namespace DeconzToMqtt.Events
+namespace DeConzToMqtt.Domain.DeConz.Events
 {
     public class DeconzMessageEvent : INotification
     {

@@ -20,4 +20,8 @@
     <PackageReference Include="Websocket.Client" Version="4.3.21" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DeconzToMqtt.Domain\DeConzToMqtt.Domain.DeConz.csproj" />
+  </ItemGroup>
+
 </Project>

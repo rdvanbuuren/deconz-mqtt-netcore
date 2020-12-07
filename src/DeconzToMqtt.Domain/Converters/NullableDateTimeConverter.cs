@@ -2,13 +2,13 @@
 using Newtonsoft.Json.Converters;
 using System;
 
-namespace DeconzToMqtt.Deconz.Converters
+namespace DeConzToMqtt.Domain.DeConz.Converters
 {
     /// <summary>
     /// A super simple datetime converter that serializes "none" -> null
     /// Note: serializing won't work because of the NullValueHandling of Json.Net but isn't required for DeConz anyways.
     /// </summary>
-    public class NullableDateTimeConverter : IsoDateTimeConverter
+    internal class NullableDateTimeConverter : IsoDateTimeConverter
     {
         private const string None = "none";
 

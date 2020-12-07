@@ -1,6 +1,6 @@
 ﻿using DeconzToMqtt.Deconz;
-using DeconzToMqtt.Deconz.Api;
-using DeconzToMqtt.Requests;
+using DeConzToMqtt.Domain.DeConz.Apis;
+using DeConzToMqtt.Domain.DeConz.Requests;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -11,11 +11,11 @@ namespace DeconzToMqtt.Handlers
 {
     public class DeconzWebSocketRequestHandler : IRequestHandler<DeconzWebSocketRequest, int>
     {
-        private readonly IDeconzConfigurationApi _deconzApi;
+        private readonly IDeConzConfigurationApi _deconzApi;
         private readonly DeconzOptions _options;
         private readonly ILogger<DeconzWebSocketRequestHandler> _logger;
 
-        public DeconzWebSocketRequestHandler(IDeconzConfigurationApi deconzApi, IOptions<DeconzOptions> options, ILogger<DeconzWebSocketRequestHandler> logger)
+        public DeconzWebSocketRequestHandler(IDeConzConfigurationApi deconzApi, IOptions<DeconzOptions> options, ILogger<DeconzWebSocketRequestHandler> logger)
         {
             _deconzApi = deconzApi;
             _options = options.Value;

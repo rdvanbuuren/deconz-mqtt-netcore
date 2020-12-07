@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace DeconzToMqtt.Requests
+namespace DeConzToMqtt.Domain.DeConz.Requests
 {
     public class DeconzWebSocketRequest : IRequest<int>
     {

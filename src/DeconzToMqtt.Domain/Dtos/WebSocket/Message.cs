@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace DeconzToMqtt.Deconz.Websocket.Models
+namespace DeConzToMqtt.Domain.DeConz.Dtos.WebSocket
 {
     public class Message
     {

@@ -1,4 +1,4 @@
-﻿using DeconzToMqtt.Events;
+﻿using DeConzToMqtt.Domain.DeConz.Events;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using System.Threading;
