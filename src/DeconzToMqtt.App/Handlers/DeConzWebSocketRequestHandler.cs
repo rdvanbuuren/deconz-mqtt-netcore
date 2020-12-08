@@ -1,5 +1,4 @@
-﻿using DeconzToMqtt.Deconz;
-using DeConzToMqtt.Domain.DeConz;
+﻿using DeConzToMqtt.Domain.DeConz;
 using DeConzToMqtt.Domain.DeConz.Apis;
 using DeConzToMqtt.Domain.DeConz.Requests;
 using MediatR;
