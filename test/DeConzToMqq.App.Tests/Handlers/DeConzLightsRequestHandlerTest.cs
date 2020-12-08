@@ -12,14 +12,17 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace DeConzToMqq.App.Tests
+namespace DeConzToMqq.App.Tests.Handlers
 {
+    /// <summary>
+    /// Unit tests for the <see cref="DeConzLightsRequestHandler"/> class.
+    /// </summary>
     public class DeConzLightsRequestHandlerTest
     {
         private readonly IFixture _fixture = new Fixture();
 
         [Fact]
-        public async Task Handle_Should_Call_Api()
+        public async Task Handle_Should_Call_Api_GetLightsAsync()
         {
             // arrange
             var options = _fixture.Create<DeConzOptions>();
@@ -35,6 +38,7 @@ namespace DeConzToMqq.App.Tests
 
             // assert
             result.Should().BeEquivalentTo(lights.Values);
+            mockApi.Verify(api => api.GetLightsAsync(options.ApiKey, default), Times.Once);
         }
     }
 }

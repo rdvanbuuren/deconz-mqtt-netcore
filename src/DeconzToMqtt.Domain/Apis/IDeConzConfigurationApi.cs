@@ -9,12 +9,12 @@ namespace DeConzToMqtt.Domain.DeConz.Apis
     public interface IDeConzConfigurationApi
     {
         [Get("/{apiKey}/config")]
-        Task<Configuration> GetConfiguration(string apiKey, CancellationToken cancellationToken);
+        Task<Configuration> GetConfigurationAsync(string apiKey, CancellationToken cancellationToken);
 
         [Post("/")]
-        Task<SuccesResult<ApiKey>> CreateApiKey(CreateApiKeyRequest request);
+        Task<SuccesResult<ApiKey>> CreateApiKeyAsync(CreateApiKeyRequest request);
 
         [Delete("/{apiKey}/config/whitelist/{apiKey2}")]
-        Task DeleteApiKey(string apiKey, string apiKey2);
+        Task DeleteApiKeyAsync(string apiKey, string apiKey2);
     }
 }

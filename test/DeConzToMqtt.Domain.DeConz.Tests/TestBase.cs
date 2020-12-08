@@ -15,6 +15,8 @@ namespace DeConzToMqtt.Domain.DeConz.Tests
 
         public static DeConzOptions Options => lazy.Value;
 
+        public static string ApiUrl => $"http://{Options.Host}:{Options.Port}/api";
+
         protected static IConfigurationRoot GetIConfigurationRoot() => new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: false)

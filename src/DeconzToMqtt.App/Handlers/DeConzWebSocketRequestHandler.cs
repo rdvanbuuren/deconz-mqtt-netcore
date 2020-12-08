@@ -27,7 +27,7 @@ namespace DeconzToMqtt.App.Handlers
         {
             _logger.LogInformation("Getting deCONZ configuration.");
 
-            var config = await _deconzApi.GetConfiguration(_options.ApiKey, cancellationToken);
+            var config = await _deconzApi.GetConfigurationAsync(_options.ApiKey, cancellationToken);
             return config.WebSocketPort;
         }
     }
