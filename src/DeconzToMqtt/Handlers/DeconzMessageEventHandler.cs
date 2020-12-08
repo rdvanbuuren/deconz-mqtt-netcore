@@ -4,18 +4,18 @@ using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DeconzToMqtt.Handlers
+namespace DeconzToMqtt.App.Handlers
 {
-    public class DeconzMessageEventHandler : INotificationHandler<DeconzMessageEvent>
+    public class DeConzMessageEventHandler : INotificationHandler<DeConzMessageEvent>
     {
-        private readonly ILogger<DeconzMessageEventHandler> _logger;
+        private readonly ILogger<DeConzMessageEventHandler> _logger;
 
-        public DeconzMessageEventHandler(ILogger<DeconzMessageEventHandler> logger)
+        public DeConzMessageEventHandler(ILogger<DeConzMessageEventHandler> logger)
         {
             _logger = logger;
         }
 
-        public Task Handle(DeconzMessageEvent notification, CancellationToken cancellationToken)
+        public Task Handle(DeConzMessageEvent notification, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Received DeconzMessageEvent");
             return Task.CompletedTask;

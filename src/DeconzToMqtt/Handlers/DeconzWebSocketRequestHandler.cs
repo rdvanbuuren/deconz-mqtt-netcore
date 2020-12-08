@@ -1,4 +1,5 @@
 ﻿using DeconzToMqtt.Deconz;
+using DeConzToMqtt.Domain.DeConz;
 using DeConzToMqtt.Domain.DeConz.Apis;
 using DeConzToMqtt.Domain.DeConz.Requests;
 using MediatR;
@@ -7,23 +8,25 @@ using Microsoft.Extensions.Options;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DeconzToMqtt.Handlers
+namespace DeconzToMqtt.App.Handlers
 {
-    public class DeconzWebSocketRequestHandler : IRequestHandler<DeconzWebSocketRequest, int>
+    public class DeConzWebSocketRequestHandler : IRequestHandler<DeConzWebSocketRequest, int>
     {
         private readonly IDeConzConfigurationApi _deconzApi;
-        private readonly DeconzOptions _options;
-        private readonly ILogger<DeconzWebSocketRequestHandler> _logger;
+        private readonly DeConzOptions _options;
+        private readonly ILogger<DeConzWebSocketRequestHandler> _logger;
 
-        public DeconzWebSocketRequestHandler(IDeConzConfigurationApi deconzApi, IOptions<DeconzOptions> options, ILogger<DeconzWebSocketRequestHandler> logger)
+        public DeConzWebSocketRequestHandler(IDeConzConfigurationApi deconzApi, IOptions<DeConzOptions> options, ILogger<DeConzWebSocketRequestHandler> logger)
         {
             _deconzApi = deconzApi;
             _options = options.Value;
             _logger = logger;
         }
 
-        public async Task<int> Handle(DeconzWebSocketRequest request, CancellationToken cancellationToken)
+        public async Task<int> Handle(DeConzWebSocketRequest request, CancellationToken cancellationToken)
         {
+            _logger.LogInformation("Getting deCONZ configuration.");
+
             var config = await _deconzApi.GetConfiguration(_options.ApiKey, cancellationToken);
             return config.WebSocketPort;
         }

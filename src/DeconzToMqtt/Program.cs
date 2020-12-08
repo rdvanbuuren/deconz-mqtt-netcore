@@ -1,5 +1,5 @@
-﻿using DeconzToMqtt.Deconz;
-using DeconzToMqtt.Deconz.Websocket;
+﻿using DeconzToMqtt.Deconz.Websocket;
+using DeConzToMqtt.Domain.DeConz;
 using DeConzToMqtt.Domain.DeConz.Apis;
 using MediatR;
 using Microsoft.Extensions.Configuration;
@@ -48,14 +48,17 @@ namespace DeconzToMqtt
 
         private static void ConfigureServices(HostBuilderContext hostContext, IServiceCollection services)
         {
-            var deconzOptions = new DeconzOptions();
+            var deconzOptions = new DeConzOptions();
             hostContext.Configuration.GetSection("deCONZ").Bind(deconzOptions);
 
-            services.Configure<DeconzOptions>(hostContext.Configuration.GetSection("deCONZ").Bind);
+            services.Configure<DeConzOptions>(hostContext.Configuration.GetSection("deCONZ").Bind);
 
             services.AddScoped<HttpLoggingHandler>();
 
             services.AddRefitClient<IDeConzConfigurationApi>()
+                .ConfigureHttpClient(client => client.BaseAddress = new Uri($"http://{deconzOptions.Host}:{deconzOptions.Port}/api"))
+                .AddHttpMessageHandler<HttpLoggingHandler>();
+            services.AddRefitClient<IDeConzLightsApi>()
                 .ConfigureHttpClient(client => client.BaseAddress = new Uri($"http://{deconzOptions.Host}:{deconzOptions.Port}/api"))
                 .AddHttpMessageHandler<HttpLoggingHandler>();
 

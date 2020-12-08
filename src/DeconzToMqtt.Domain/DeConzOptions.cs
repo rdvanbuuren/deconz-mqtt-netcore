@@ -1,9 +1,9 @@
-﻿namespace DeconzToMqtt.Deconz
+﻿namespace DeConzToMqtt.Domain.DeConz
 {
     /// <summary>
-    /// Options that configure the websocket.
+    /// Options that configure the conneciton to deCONZ.
     /// </summary>
-    public class DeconzOptions
+    public class DeConzOptions
     {
         /// <summary>
         /// Gets or set the host (ip address or hostname).

@@ -3,9 +3,9 @@ using MediatR;
 
 namespace DeConzToMqtt.Domain.DeConz.Events
 {
-    public class DeconzMessageEvent : INotification
+    public class DeConzMessageEvent : INotification
     {
-        public DeconzMessageEvent(Message message)
+        public DeConzMessageEvent(Message message)
         {
             Message = message;
         }

@@ -1,4 +1,5 @@
-﻿using DeConzToMqtt.Domain.DeConz.Dtos.WebSocket;
+﻿using DeConzToMqtt.Domain.DeConz;
+using DeConzToMqtt.Domain.DeConz.Dtos.WebSocket;
 using DeConzToMqtt.Domain.DeConz.Events;
 using DeConzToMqtt.Domain.DeConz.Requests;
 using MediatR;
@@ -17,13 +18,13 @@ namespace DeconzToMqtt.Deconz.Websocket
     {
         private readonly IMediator _mediator;
         private readonly ILogger<WebSocketService> _logger;
-        private readonly DeconzOptions _options;
+        private readonly DeConzOptions _options;
 
         /// <summary>
         /// Creates a new instance of the <see cref="WebSocketService"/> class.
         /// </summary>
         /// <param name="logger">The logger for this class.</param>
-        public WebSocketService(IMediator mediator, IOptions<DeconzOptions> options, ILogger<WebSocketService> logger)
+        public WebSocketService(IMediator mediator, IOptions<DeConzOptions> options, ILogger<WebSocketService> logger)
         {
             _options = options.Value;
             _mediator = mediator;
@@ -32,7 +33,7 @@ namespace DeconzToMqtt.Deconz.Websocket
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            var websocketPort = await _mediator.Send(new DeconzWebSocketRequest(), cancellationToken);
+            var websocketPort = await _mediator.Send(new DeConzWebSocketRequest(), cancellationToken);
 
             var url = new Uri($"ws://{_options.Host}:{websocketPort}");
 
@@ -62,7 +63,7 @@ namespace DeconzToMqtt.Deconz.Websocket
             var msg = JsonConvert.DeserializeObject<Message>(message.Text);
 
             // emit event so mqtt service will pick it up.
-            _mediator.Publish(new DeconzMessageEvent(msg), cancellationToken);
+            _mediator.Publish(new DeConzMessageEvent(msg), cancellationToken);
         }
     }
 }
