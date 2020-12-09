@@ -8,9 +8,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Websocket.Client;
 using Websocket.Client.Models;
@@ -23,7 +20,7 @@ namespace DeConzToMqq.App.Tests.DeConz
         private readonly IFixture _fixture = new Fixture();
 
         [Fact]
-        public async Task StartAsync_Should_Setup_Connection_And_Listen()
+        public async Task StartAsync_Should_Setup_Connection_And_Listen_To_Observables()
         {
             var options = _fixture.Create<DeConzOptions>();
             var websocketPort = _fixture.Create<int>();
@@ -44,7 +41,7 @@ namespace DeConzToMqq.App.Tests.DeConz
             clientMock.SetupGet(c => c.ReconnectionHappened).Returns(reconnectionHappenedMock.Object);
             clientMock.SetupGet(c => c.DisconnectionHappened).Returns(disconnectionHappenedMock.Object);
             clientMock.SetupGet(c => c.MessageReceived).Returns(messageReceivedMock.Object);
-            clientMock.Setup(s => s.Start()).Returns(Task.CompletedTask);
+            clientMock.Setup(c => c.Start()).Returns(Task.CompletedTask).Verifiable();
 
             var clientFactoryMock = new Mock<IWebsocketClientFactory>(MockBehavior.Strict);
             clientFactoryMock.Setup(f => f.CreateClient(It.IsAny<Uri>())).Returns(clientMock.Object).Verifiable();
@@ -63,6 +60,7 @@ namespace DeConzToMqq.App.Tests.DeConz
             reconnectionHappenedMock.Verify(o => o.Subscribe(It.IsAny<IObserver<ReconnectionInfo>>()), Times.Once, "Needs one subsccription.");
             disconnectionHappenedMock.Verify(o => o.Subscribe(It.IsAny<IObserver<DisconnectionInfo>>()), Times.Once, "Needs one subsccription.");
             messageReceivedMock.Verify(o => o.Subscribe(It.IsAny<IObserver<ResponseMessage>>()), Times.Once, "Needs one subsccription.");
+            clientMock.Verify(c => c.Start(), Times.Once, "Websocket client should be started.");
         }
     }
 }
