@@ -14,7 +14,7 @@ using Xunit;
 namespace DeConzToMqq.App.Tests.Handlers
 {
     /// <summary>
-    /// Unit tests for the <see cref="DeConzWebSocketRequestHandler"/> class.
+    /// Unit tests for the <see cref="DeConzWebsocketRequestHandler"/> class.
     /// </summary>
     public class DeConzWebSocketRequestHandlerTest
     {
@@ -30,10 +30,10 @@ namespace DeConzToMqq.App.Tests.Handlers
             var mockApi = new Mock<IDeConzConfigurationApi>(MockBehavior.Strict);
             mockApi.Setup(api => api.GetConfigurationAsync(options.ApiKey, default)).ReturnsAsync(configuration);
 
-            var handler = new DeConzWebSocketRequestHandler(mockApi.Object, Options.Create(options), new NullLogger<DeConzWebSocketRequestHandler>());
+            var handler = new DeConzWebsocketRequestHandler(mockApi.Object, Options.Create(options), new NullLogger<DeConzWebsocketRequestHandler>());
 
             // act
-            var result = await handler.Handle(new DeConzWebSocketRequest(), default);
+            var result = await handler.Handle(new DeConzWebsocketRequest(), default);
 
             // assert
             result.Should().Be(configuration.WebSocketPort, because: "The WebSocket port should be returned from the configuration");

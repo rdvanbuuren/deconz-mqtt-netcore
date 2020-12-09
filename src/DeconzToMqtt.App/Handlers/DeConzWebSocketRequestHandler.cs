@@ -9,20 +9,20 @@ using System.Threading.Tasks;
 
 namespace DeconzToMqtt.App.Handlers
 {
-    public class DeConzWebSocketRequestHandler : IRequestHandler<DeConzWebSocketRequest, int>
+    public class DeConzWebsocketRequestHandler : IRequestHandler<DeConzWebsocketRequest, int>
     {
         private readonly IDeConzConfigurationApi _deconzApi;
         private readonly DeConzOptions _options;
-        private readonly ILogger<DeConzWebSocketRequestHandler> _logger;
+        private readonly ILogger<DeConzWebsocketRequestHandler> _logger;
 
-        public DeConzWebSocketRequestHandler(IDeConzConfigurationApi deconzApi, IOptions<DeConzOptions> options, ILogger<DeConzWebSocketRequestHandler> logger)
+        public DeConzWebsocketRequestHandler(IDeConzConfigurationApi deconzApi, IOptions<DeConzOptions> options, ILogger<DeConzWebsocketRequestHandler> logger)
         {
             _deconzApi = deconzApi;
             _options = options.Value;
             _logger = logger;
         }
 
-        public async Task<int> Handle(DeConzWebSocketRequest request, CancellationToken cancellationToken)
+        public async Task<int> Handle(DeConzWebsocketRequest request, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Getting deCONZ configuration.");
 

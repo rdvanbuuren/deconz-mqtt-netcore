@@ -1,4 +1,4 @@
-﻿using DeconzToMqtt.Deconz.Websocket;
+﻿using DeConzToMqtt.App.DeConz;
 using DeConzToMqtt.Domain.DeConz;
 using DeConzToMqtt.Domain.DeConz.Apis;
 using MediatR;
@@ -62,7 +62,9 @@ namespace DeconzToMqtt
                 .ConfigureHttpClient(client => client.BaseAddress = new Uri($"http://{deconzOptions.Host}:{deconzOptions.Port}/api"))
                 .AddHttpMessageHandler<HttpLoggingHandler>();
 
-            services.AddHostedService<WebSocketService>();
+            services.AddSingleton<IWebsocketClientFactory, WebsocketClientFactory>();
+
+            services.AddHostedService<WebsocketService>();
 
             services.AddMediatR(typeof(Program));
         }
