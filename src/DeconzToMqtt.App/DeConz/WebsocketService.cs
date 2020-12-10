@@ -1,11 +1,8 @@
-﻿using DeConzToMqtt.Domain.DeConz;
-using DeConzToMqtt.Domain.DeConz.Dtos.WebSocket;
+﻿using DeConzToMqtt.Domain.DeConz.Dtos.WebSocket;
 using DeConzToMqtt.Domain.DeConz.Events;
-using DeConzToMqtt.Domain.DeConz.Requests;
 using MediatR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Threading;
@@ -22,7 +19,6 @@ namespace DeConzToMqtt.App.DeConz
         private readonly IWebsocketClientFactory _clientFactory;
         private readonly IMediator _mediator;
         private readonly ILogger<WebsocketService> _logger;
-        private readonly DeConzOptions _options;
 
         private IWebsocketClient _client;
         private bool isDisposed;
@@ -34,9 +30,8 @@ namespace DeConzToMqtt.App.DeConz
         /// <param name="mediator">The mediator to send events.</param>
         /// <param name="options">The options used to connect to deCONZ.</param>
         /// <param name="logger">The logger for this class.</param>
-        public WebsocketService(IWebsocketClientFactory clientFactory, IMediator mediator, IOptions<DeConzOptions> options, ILogger<WebsocketService> logger)
+        public WebsocketService(IWebsocketClientFactory clientFactory, IMediator mediator, ILogger<WebsocketService> logger)
         {
-            _options = options.Value;
             _clientFactory = clientFactory;
             _mediator = mediator;
             _logger = logger;
@@ -45,10 +40,7 @@ namespace DeConzToMqtt.App.DeConz
         /// <inheritdoc/>
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            var websocketPort = await _mediator.Send(new DeConzWebsocketRequest(), cancellationToken);
-            var url = new Uri($"ws://{_options.Host}:{websocketPort}");
-
-            _client = _clientFactory.CreateClient(url);
+            _client = await _clientFactory.CreateClientAsync();
 
             _client.Name = "deCONZ";
             _client.ReconnectTimeout = TimeSpan.FromMinutes(5);
@@ -87,7 +79,7 @@ namespace DeConzToMqtt.App.DeConz
         /// <inheritdoc/>
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            return _client.Stop(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, "WebsocketService stopped.");
+            return _client?.Stop(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, "WebsocketService stopped.");
         }
 
         protected virtual void Dispose(bool disposing)

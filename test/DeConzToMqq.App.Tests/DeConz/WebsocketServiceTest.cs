@@ -7,7 +7,6 @@ using DeConzToMqtt.Domain.DeConz.Requests;
 using FluentAssertions;
 using MediatR;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using Moq;
 using Newtonsoft.Json;
 using System;
@@ -46,19 +45,17 @@ namespace DeConzToMqq.App.Tests.DeConz
             clientMock.Setup(c => c.Start()).Returns(Task.CompletedTask).Verifiable();
 
             var clientFactoryMock = new Mock<IWebsocketClientFactory>(MockBehavior.Strict);
-            clientFactoryMock.Setup(f => f.CreateClient(It.IsAny<Uri>())).Returns(clientMock.Object).Verifiable();
+            clientFactoryMock.Setup(f => f.CreateClientAsync(null)).ReturnsAsync(clientMock.Object).Verifiable();
 
             var mediatorMock = new Mock<IMediator>(MockBehavior.Strict);
-            mediatorMock.Setup(m => m.Send(It.IsAny<DeConzWebsocketRequest>(), default)).ReturnsAsync(websocketPort).Verifiable();
 
-            var service = new WebsocketService(clientFactoryMock.Object, mediatorMock.Object, Options.Create(options), new NullLogger<WebsocketService>());
+            var service = new WebsocketService(clientFactoryMock.Object, mediatorMock.Object, new NullLogger<WebsocketService>());
 
             // act
             await service.StartAsync(default);
 
             // assert
-            mediatorMock.Verify(m => m.Send(It.IsAny<DeConzWebsocketRequest>(), default), Times.Once, "Needs to be called once.");
-            clientFactoryMock.Verify(f => f.CreateClient(It.IsAny<Uri>()), Times.Once, "Needs to be called once.");
+            clientFactoryMock.Verify(f => f.CreateClientAsync(null), Times.Once, "Needs to be called once.");
             reconnectionHappenedMock.Verify(o => o.Subscribe(It.IsAny<IObserver<ReconnectionInfo>>()), Times.Once, "Needs one subsccription.");
             disconnectionHappenedMock.Verify(o => o.Subscribe(It.IsAny<IObserver<DisconnectionInfo>>()), Times.Once, "Needs one subsccription.");
             messageReceivedMock.Verify(o => o.Subscribe(It.IsAny<IObserver<ResponseMessage>>()), Times.Once, "Needs one subsccription.");
@@ -68,7 +65,6 @@ namespace DeConzToMqq.App.Tests.DeConz
         [Fact]
         public async Task StartAsync_Should_ReceiveMessage_And_Publish()
         {
-            var options = _fixture.Create<DeConzOptions>();
             var websocketPort = _fixture.Create<int>();
             var message = _fixture.Create<Message>();
             var messageJson = JsonConvert.SerializeObject(message);
@@ -94,19 +90,54 @@ namespace DeConzToMqq.App.Tests.DeConz
             clientMock.Setup(c => c.Start()).Returns(Task.CompletedTask);
 
             var clientFactoryMock = new Mock<IWebsocketClientFactory>(MockBehavior.Strict);
-            clientFactoryMock.Setup(f => f.CreateClient(It.IsAny<Uri>())).Returns(clientMock.Object);
+            clientFactoryMock.Setup(f => f.CreateClientAsync(null)).ReturnsAsync(clientMock.Object);
 
             var mediatorMock = new Mock<IMediator>(MockBehavior.Strict);
             mediatorMock.Setup(m => m.Send(It.IsAny<DeConzWebsocketRequest>(), default)).ReturnsAsync(websocketPort);
             mediatorMock.Setup(m => m.Publish(It.IsAny<DeConzMessageEvent>(), default)).Returns(Task.CompletedTask).Verifiable();
 
-            var service = new WebsocketService(clientFactoryMock.Object, mediatorMock.Object, Options.Create(options), new NullLogger<WebsocketService>());
+            var service = new WebsocketService(clientFactoryMock.Object, mediatorMock.Object, new NullLogger<WebsocketService>());
 
             // act
             await service.StartAsync(default);
 
             // assert
             mediatorMock.Verify(m => m.Publish(It.IsAny<DeConzMessageEvent>(), default), Times.Once, "Needs to be called once.");
+        }
+
+        [Fact]
+        public async Task StopAsync_Should_Stop_WebsocketClient()
+        {
+            // arrange
+            var options = _fixture.Create<DeConzOptions>();
+
+            var reconnectionHappenedMock = new Mock<IObservable<ReconnectionInfo>>();
+            reconnectionHappenedMock.Setup(o => o.Subscribe(It.IsAny<IObserver<ReconnectionInfo>>()));
+            var disconnectionHappenedMock = new Mock<IObservable<DisconnectionInfo>>();
+            disconnectionHappenedMock.Setup(o => o.Subscribe(It.IsAny<IObserver<DisconnectionInfo>>()));
+            var messageReceivedMock = new Mock<IObservable<ResponseMessage>>();
+            messageReceivedMock.Setup(o => o.Subscribe(It.IsAny<IObserver<ResponseMessage>>()));
+
+            var clientMock = new Mock<IWebsocketClient>();
+            clientMock.SetupGet(c => c.ReconnectionHappened).Returns(reconnectionHappenedMock.Object);
+            clientMock.SetupGet(c => c.DisconnectionHappened).Returns(disconnectionHappenedMock.Object);
+            clientMock.SetupGet(c => c.MessageReceived).Returns(messageReceivedMock.Object);
+            clientMock.Setup(c => c.Start()).Returns(Task.CompletedTask).Verifiable();
+            clientMock.Setup(c => c.Stop(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, "WebsocketService stopped.")).Verifiable();
+
+            var clientFactoryMock = new Mock<IWebsocketClientFactory>(MockBehavior.Strict);
+            clientFactoryMock.Setup(f => f.CreateClientAsync(null)).ReturnsAsync(clientMock.Object);
+
+            var mediatorMock = new Mock<IMediator>(MockBehavior.Strict);
+
+            var service = new WebsocketService(clientFactoryMock.Object, mediatorMock.Object, new NullLogger<WebsocketService>());
+
+            // act
+            await service.StartAsync(default);
+            await service.StopAsync(default);
+
+            // assert
+            clientMock.Verify(c => c.Stop(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, "WebsocketService stopped."), Times.Once);
         }
     }
 }
