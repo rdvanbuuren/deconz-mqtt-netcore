@@ -1,4 +1,4 @@
-﻿using DeConzToMqtt.App.DeConz;
+﻿using DeConzToMqtt.App.DeConz.Websocket;
 using DeConzToMqtt.Domain.DeConz;
 using DeConzToMqtt.Domain.DeConz.Apis;
 using MediatR;

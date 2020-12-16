@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Websocket.Client;
 
-namespace DeConzToMqtt.App.DeConz
+namespace DeConzToMqtt.App.DeConz.Websocket
 {
     /// <summary>
     /// Websocket service that listens for incoming messages from deCONZ.

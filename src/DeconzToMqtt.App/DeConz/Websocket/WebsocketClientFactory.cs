@@ -1,12 +1,11 @@
 ﻿using DeConzToMqtt.Domain.DeConz;
-using DeConzToMqtt.Domain.DeConz.Requests;
 using MediatR;
 using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
 using Websocket.Client;
 
-namespace DeConzToMqtt.App.DeConz
+namespace DeConzToMqtt.App.DeConz.Websocket
 {
     /// <summary>
     /// Contract for the <see cref="WebsocketClientFactory"/> class.
@@ -33,8 +32,8 @@ namespace DeConzToMqtt.App.DeConz
         {
             _url = new Lazy<Task<Uri>>(async () =>
             {
-                var websocketPort = await mediator.Send(new DeConzWebsocketRequest());
-                return new Uri($"ws://{options.Value.Host}:{websocketPort}");
+                var config = await mediator.Send(new GetConfiguration.Request());
+                return new Uri($"ws://{options.Value.Host}:{config.WebSocketPort}");
             });
         }
 
