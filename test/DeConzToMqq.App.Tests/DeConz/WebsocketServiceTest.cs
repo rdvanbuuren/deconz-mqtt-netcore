@@ -1,9 +1,10 @@
 ﻿using AutoFixture;
 using DeConzToMqtt.App.DeConz;
+using DeConzToMqtt.App.DeConz.Websocket;
 using DeConzToMqtt.Domain.DeConz;
+using DeConzToMqtt.Domain.DeConz.Dtos.Configuration;
 using DeConzToMqtt.Domain.DeConz.Dtos.WebSocket;
 using DeConzToMqtt.Domain.DeConz.Events;
-using DeConzToMqtt.Domain.DeConz.Requests;
 using FluentAssertions;
 using MediatR;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -65,7 +66,7 @@ namespace DeConzToMqq.App.Tests.DeConz
         [Fact]
         public async Task StartAsync_Should_ReceiveMessage_And_Publish()
         {
-            var websocketPort = _fixture.Create<int>();
+            var configuration = _fixture.Create<Configuration>();
             var message = _fixture.Create<Message>();
             var messageJson = JsonConvert.SerializeObject(message);
 
@@ -93,7 +94,7 @@ namespace DeConzToMqq.App.Tests.DeConz
             clientFactoryMock.Setup(f => f.CreateClientAsync(null)).ReturnsAsync(clientMock.Object);
 
             var mediatorMock = new Mock<IMediator>(MockBehavior.Strict);
-            mediatorMock.Setup(m => m.Send(It.IsAny<DeConzWebsocketRequest>(), default)).ReturnsAsync(websocketPort);
+            mediatorMock.Setup(m => m.Send(It.IsAny<GetConfiguration.Request>(), default)).ReturnsAsync(configuration);
             mediatorMock.Setup(m => m.Publish(It.IsAny<DeConzMessageEvent>(), default)).Returns(Task.CompletedTask).Verifiable();
 
             var service = new WebsocketService(clientFactoryMock.Object, mediatorMock.Object, new NullLogger<WebsocketService>());

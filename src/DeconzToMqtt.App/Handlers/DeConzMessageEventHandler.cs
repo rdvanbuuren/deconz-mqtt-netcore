@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace DeconzToMqtt.App.Handlers
 {
+    // TODO: move to MQTT
     public class DeConzMessageEventHandler : INotificationHandler<DeConzMessageEvent>
     {
         private readonly ILogger<DeConzMessageEventHandler> _logger;

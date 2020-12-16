@@ -8,6 +8,7 @@ namespace DeConzToMqtt.Domain.DeConz.Apis
 {
     public interface IDeConzConfigurationApi
     {
+        // TODO https://github.com/reactiveui/refit/blob/main/Refit/ApiResponse.cs
         [Get("/{apiKey}/config")]
         Task<Configuration> GetConfigurationAsync(string apiKey, CancellationToken cancellationToken);
 
